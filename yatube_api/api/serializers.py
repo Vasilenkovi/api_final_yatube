@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class FollowSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(
         slug_field='username',
@@ -34,13 +35,12 @@ class FollowSerializer(serializers.ModelSerializer):
         return data
 
 
-
 class PostSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(
         slug_field='username',
-        read_only=True  # Делаем поле только для чтения
+        read_only=True
     )
-    
+
     class Meta:
         model = Post
         fields = '__all__'

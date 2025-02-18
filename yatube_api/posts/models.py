@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 User = get_user_model()
 
+
 class Follow(models.Model):
     user = models.ForeignKey(
         User,
@@ -22,6 +23,7 @@ class Follow(models.Model):
             )
         ]
 
+
 class Group(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
@@ -29,6 +31,7 @@ class Group(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class Post(models.Model):
     text = models.TextField()
@@ -44,7 +47,7 @@ class Post(models.Model):
         blank=True,
         null=True
     )
-    
+
     def __str__(self):
         return self.text
 
