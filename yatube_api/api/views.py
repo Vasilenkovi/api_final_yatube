@@ -5,6 +5,7 @@ from .serializers import GroupSerializer, PostSerializer, CommentSerializer
 from .permissions import IsAuthorOrReadOnly
 from .pagination import OptionalPagination
 from rest_framework import viewsets, permissions, filters
+from django.shortcuts import get_object_or_404
 
 
 class FollowViewSet(viewsets.ModelViewSet):
@@ -24,10 +25,10 @@ class FollowViewSet(viewsets.ModelViewSet):
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [permissions.AllowAny]
-    pagination_class = None
-    http_method_names = ['get', 'head', 'options']
-
+    permission_classes = [
+        permissions.AllowAny,
+    ]
+    pagination_class=None
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
@@ -52,9 +53,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
     def get_queryset(self):
-        post_id = self.kwargs.get('post_id')
-        return Comment.objects.filter(post_id=post_id)
+        post = get_object_or_404(Post, pk=self.kwargs.get("post_id"))
+        new_queryset = post.comments.all()
+        return new_queryset
 
     def perform_create(self, serializer):
-        post = Post.objects.get(id=self.kwargs.get('post_id'))
-        serializer.save(author=self.request.user, post=post)
+        post = get_object_or_404(Post, pk=self.kwargs.get("post_id"))
+        if serializer.is_valid():
+            serializer.save(author=self.request.user, post=post)
+        return super().perform_create(serializer)
